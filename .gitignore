@@ -1,0 +1,15 @@
+# 虚拟环境
+venv/
+.env
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+
+# 数据与权重（千万不要传上网，太大了）
+data/raw/
+data/annotated/
+data/minneapple/*
+!data/minneapple/.gitkeep
+models/*.pt
+outputs/
