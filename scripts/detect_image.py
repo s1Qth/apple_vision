@@ -3,7 +3,7 @@ from pathlib import Path
 
 # 1. 读图（用你之前改好的正确路径）
 script_dir = Path(__file__).parent
-img_path = script_dir.parent / "data" / "raw" / "first apple.jpg"
+img_path = script_dir.parent / "data" / "raw" / "first_apple.jpg"
 img = cv2.imread(str(img_path))
 
 if img is not None:  
