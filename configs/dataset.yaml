@@ -1,6 +1,11 @@
-path: data/apples_yolo
+# YOLO 数据集配置文件
+path: C:/Users/asus/apple_vision/data/apples_yolo  # 绝对路径（防止路径找错）
 train: images/train
 val: images/val
+
+# 类别名称
 names:
   0: apple
+
+# 类别数量
 nc: 1
