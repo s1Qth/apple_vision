@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from pathlib import Path
 
-def detect_apples(img, min_area=5000):
+def detect_apples(img, min_area=2000):
     """
     输入一张 BGR 原图，返回画了圆圈的图和检测到的苹果数量
     """
@@ -100,7 +100,7 @@ def main():
             continue
 
         # 调用检测函数 (你可以在这里修改 min_area 的值来调整灵敏度)
-        result_img, apple_count = detect_apples(img, min_area=5000)
+        result_img, apple_count = detect_apples(img, min_area=2000)
 
         # 保存结果图
         save_name = f"{img_path.stem}_detect.jpg"
