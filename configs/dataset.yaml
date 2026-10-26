@@ -1,7 +1,7 @@
 # YOLO 数据集配置文件
-path: C:/Users/asus/apple_vision/data/apples_yolo  # 绝对路径（防止路径找错）
-train: C:/Users/asus/apple_vision/data/apples_yolo/images/train
-val: C:/Users/asus/apple_vision/data/apples_yolo/images/val
+path: C:/Users/asus/apple_vision/data/apple_yolo  # 绝对路径（防止路径找错）
+train: C:/Users/asus/apple_vision/data/apple_yolo/images/train
+val: C:/Users/asus/apple_vision/data/apple_yolo/images/val
 
 # 类别名称
 names:
