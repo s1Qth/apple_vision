@@ -3,7 +3,7 @@ Day 12 实操：评估 + 推理 YOLOv8 苹果检测器
 ==========================================
 用法:
     conda activate apple
-    python scripts/day12_eval.py --weights runs/detect/train/weights/best.pt --image data/raw/apple.jpg
+    python scripts/day12_eval.py --weights runs/detect/train/weights/best.pt --image data/raw/test.jpg
 """
 import argparse
 import os
