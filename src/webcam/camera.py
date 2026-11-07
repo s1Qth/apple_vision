@@ -89,6 +89,10 @@ class WebcamCamera(BaseCamera):
         self.actual_w = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.actual_h = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.actual_fps = self.cap.get(cv2.CAP_PROP_FPS)
+        print(
+            f"[相机] 已打开摄像头 cam_id={self.cam_id}，"
+            f"实际分辨率 {self.actual_w}x{self.actual_h}，请求帧率 {self.req_fps}"
+        )
 
     def read(self):
         ok, frame = self.cap.read()
@@ -210,3 +214,23 @@ def list_webcams(max_id: int = 4):
             found.append(i)
             cap.release()
     return found
+
+
+def list_webcams_info(max_id: int = 6):
+    """枚举可用摄像头，并尝试读一帧拿到实际分辨率，返回 [{id, w, h}, ...]。
+
+    比 list_webcams 更实用：能直接看到每个设备号对应的画面尺寸，
+    方便你判断"哪个是你接的 USB 摄像头"（通常内置是 0，外接 USB 是 1）。
+    """
+    info = []
+    for i in range(max_id):
+        cap = cv2.VideoCapture(i)
+        if cap.isOpened():
+            ok, frame = cap.read()
+            if ok and frame is not None:
+                h, w = frame.shape[:2]
+                info.append({"id": i, "w": w, "h": h})
+            else:
+                info.append({"id": i, "w": None, "h": None})
+            cap.release()
+    return info

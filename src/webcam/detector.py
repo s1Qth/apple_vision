@@ -33,15 +33,29 @@ from ultralytics import YOLO
 class AppleDetector:
     """对单张 BGR 彩色图做苹果检测，返回结构化结果列表。"""
 
-    def __init__(self, weights: str, conf: float = 0.3, device: str = "cpu"):
+    def __init__(
+        self,
+        weights: str,
+        conf: float = 0.3,
+        device: str = "cpu",
+        min_aspect: float = 0.45,
+        max_aspect: float = 2.2,
+        min_area_ratio: float = 0.0,
+    ):
         """
         weights : YOLOv8 权重路径，例如 runs/detect/train/weights/best.pt
         conf    : 置信度阈值，低于它的框不要（越高越严格、越少误检）
         device  : 'cpu' 或 '0'(GPU)；本机没显卡用 'cpu'
+        min_aspect/max_aspect : 框的宽/高比允许范围（苹果近似圆形，过窄/过长的脸框会被丢掉）
+        min_area_ratio : 框面积占整图的最小比例（0=不限制），可丢弃极小误检
         """
+        self.weights = weights
         self.model = YOLO(weights)
         self.conf = float(conf)
         self.device = device
+        self.min_aspect = float(min_aspect)
+        self.max_aspect = float(max_aspect)
+        self.min_area_ratio = float(min_area_ratio)
         names = getattr(self.model, "names", None)
         self.class_names = names if isinstance(names, dict) else {0: "apple"}
 
@@ -72,9 +86,36 @@ class AppleDetector:
                     "center": ((x1 + x2) / 2.0, (y1 + y2) / 2.0),
                 }
             )
+
+        # 几何合理性过滤：苹果近似圆形（宽高比接近 1），过窄/过长或太小的框
+        # 多半是误检（人脸、眼镜、光斑等）。这一步能挡掉大部分"脸被识别成苹果"。
+        h_img, w_img = frame_bgr.shape[:2]
+        kept = []
+        for d in dets:
+            x1, y1, x2, y2 = d["bbox"]
+            bw, bh = x2 - x1, y2 - y1
+            if bw <= 0 or bh <= 0:
+                continue
+            ar = bw / bh
+            if ar < self.min_aspect or ar > self.max_aspect:
+                continue
+            if self.min_area_ratio > 0 and (bw * bh) / (w_img * h_img) < self.min_area_ratio:
+                continue
+            kept.append(d)
+        dets = kept
+
         # 按置信度从高到低排，方便后续"最可信的优先"
         dets.sort(key=lambda d: -d["conf"])
         return dets
+
+    def summary(self) -> str:
+        """打印加载的模型信息，解决"不知道接的什么模型"的困惑。"""
+        return (
+            f"权重文件 : {self.weights}\n"
+            f"  类别     : {self.class_names}（共 {len(self.class_names)} 类）\n"
+            f"  置信阈值 : conf={self.conf}\n"
+            f"  长宽比过滤: [{self.min_aspect}, {self.max_aspect}]（超出范围的框直接丢弃）"
+        )
 
     def annotate(self, frame_bgr: np.ndarray, dets: list, color=(0, 200, 0)) -> np.ndarray:
         """
