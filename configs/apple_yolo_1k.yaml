@@ -1,0 +1,9 @@
+# YOLO 数据集配置 —— 1000 张真实果园苹果图（SyneticAI/ApplesM5, CC BY 4.0）
+# 训练: python scripts/retrain_train.py --data configs/apple_yolo_1k.yaml --epochs 100 --device cpu
+path: C:/Users/asus/apple_vision/data/apple_yolo_1k
+train: C:/Users/asus/apple_vision/data/apple_yolo_1k/images/train
+val: C:/Users/asus/apple_vision/data/apple_yolo_1k/images/val
+
+names:
+  0: apple
+nc: 1
